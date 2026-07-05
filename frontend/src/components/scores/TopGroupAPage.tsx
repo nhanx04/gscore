@@ -1,10 +1,23 @@
 import ErrorState from "@/components/common/ErrorState";
-import LoadingSpinner from "@/components/common/LoadingSpinner";
 import { useTopGroupA } from "@/hooks/useTopGroupA";
-import { FiAward, FiTrendingUp } from "react-icons/fi";
 
 export default function TopGroupAPage() {
-  const { data, loading, error } = useTopGroupA();
+  const { data = [], loading, error } = useTopGroupA();
+
+  const items = data
+    .map((item) => {
+      const math = Number(item.math ?? 0);
+      const physics = Number(item.physics ?? 0);
+      const chemistry = Number(item.chemistry ?? 0);
+
+      return {
+        ...item,
+        total_score: math + physics + chemistry,
+      };
+    })
+    .sort((a, b) => b.total_score - a.total_score);
+
+  const isWaitingData = loading || items.length === 0;
 
   return (
     <section className="stack">
@@ -16,41 +29,44 @@ export default function TopGroupAPage() {
               Top 10 học sinh theo tổng điểm ba môn nền tảng.
             </p>
           </div>
-          <span className="section-badge">
-            <FiTrendingUp />
-            Cập nhật xếp hạng
-          </span>
         </div>
 
-        <div className="table-wrap">
-          <table className="data-table top-table">
-            <thead>
-              <tr>
-                <th>Hạng</th>
-                <th>Số báo danh</th>
-                <th>Toán</th>
-                <th>Vật lý</th>
-                <th>Hóa học</th>
-                <th>Tổng điểm</th>
-              </tr>
-            </thead>
-            <tbody>
-              {data.map((item, index) => (
-                <tr
-                  key={item.registration_number}
-                  className={index < 3 ? "row-emphasize" : undefined}
-                >
-                  <td>{index + 1}</td>
-                  <td>{item.registration_number}</td>
-                  <td>{item.math}</td>
-                  <td>{item.physics}</td>
-                  <td>{item.chemistry}</td>
-                  <td>{item.total_score}</td>
+        {error ? (
+          <ErrorState title="Không thể tải dữ liệu" description={error} />
+        ) : isWaitingData ? (
+          <div className="empty-state-1">Đang tải dữ liệu...</div>
+        ) : (
+          <div className="table-wrap">
+            <table className="data-table top-table">
+              <thead>
+                <tr>
+                  <th>Hạng</th>
+                  <th>Số báo danh</th>
+                  <th>Toán</th>
+                  <th>Vật lý</th>
+                  <th>Hóa học</th>
+                  <th>Tổng điểm</th>
                 </tr>
-              ))}
-            </tbody>
-          </table>
-        </div>
+              </thead>
+
+              <tbody>
+                {items.map((item, index) => (
+                  <tr
+                    key={item.registration_number}
+                    className={index < 3 ? "row-emphasize" : undefined}
+                  >
+                    <td>{index + 1}</td>
+                    <td>{item.registration_number}</td>
+                    <td>{item.math}</td>
+                    <td>{item.physics}</td>
+                    <td>{item.chemistry}</td>
+                    <td>{item.total_score.toFixed(2)}</td>
+                  </tr>
+                ))}
+              </tbody>
+            </table>
+          </div>
+        )}
       </div>
     </section>
   );

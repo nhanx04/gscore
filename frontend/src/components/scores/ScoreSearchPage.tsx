@@ -61,10 +61,6 @@ export default function ScoreSearchPage() {
           <div>
             <h3>Kết quả tra cứu</h3>
           </div>
-          <span className="section-badge">
-            <FiCheckCircle />
-            Kết quả tham chiếu
-          </span>
         </div>
         <ScoreResultTable score={result} />
       </div>

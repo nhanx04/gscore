@@ -6,8 +6,6 @@ from django.db import models
 
 class StudentScore(models.Model):
     registration_number = models.CharField(max_length=20, unique=True, db_index=True)
-    # Subject score fields are intentionally not indexed to reduce storage usage for large CSV imports.
-    # The main lookup field is registration_number.
     math = models.DecimalField(max_digits=4, decimal_places=2, null=True, blank=True)
     literature = models.DecimalField(max_digits=4, decimal_places=2, null=True, blank=True)
     foreign_language = models.DecimalField(max_digits=4, decimal_places=2, null=True, blank=True)

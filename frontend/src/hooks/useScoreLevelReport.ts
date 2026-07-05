@@ -1,23 +1,37 @@
-import { useEffect, useState } from 'react';
-import { fetchScoreLevelReport } from '@/api/scoreApi';
-import type { ScoreLevelReport } from '@/types/score';
+import { useEffect, useState } from "react";
+import { fetchScoreLevelReport } from "@/api/scoreApi";
+import type { ScoreLevelReport } from "@/types/score";
 
-export function useScoreLevelReport() {
+export function useScoreLevelReport(enabled = true) {
   const [data, setData] = useState<ScoreLevelReport[]>([]);
-  const [loading, setLoading] = useState(true);
-  const [error, setError] = useState('');
+  const [loading, setLoading] = useState(false);
+  const [error, setError] = useState("");
 
   useEffect(() => {
+    if (!enabled) return;
     let mounted = true;
-    fetchScoreLevelReport()
-      .then((res) => mounted && setData(res))
-      .catch(() => mounted && setError('Không thể tải dữ liệu thống kê.'))
-      .finally(() => mounted && setLoading(false));
+
+    async function loadReport() {
+      try {
+        setLoading(true);
+        setError("");
+        const response = await fetchScoreLevelReport();
+        if (!mounted) return;
+        setData(response);
+      } catch {
+        if (!mounted) return;
+        setError("Không thể tải dữ liệu thống kê.");
+      } finally {
+        if (mounted) setLoading(false);
+      }
+    }
+
+    loadReport();
+
     return () => {
       mounted = false;
     };
-  }, []);
+  }, [enabled]);
 
   return { data, loading, error };
 }
-

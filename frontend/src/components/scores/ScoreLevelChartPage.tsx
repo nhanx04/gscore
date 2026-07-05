@@ -53,6 +53,26 @@ const SCORE_LEVELS = [
   },
 ] as const;
 
+function renderPieLabel({ x, y, payload }: any) {
+  const percent = Number(payload?.percent ?? 0);
+
+  if (percent < 3) return null;
+
+  return (
+    <text
+      x={x}
+      y={y}
+      textAnchor="middle"
+      dominantBaseline="central"
+      fontSize={11}
+      fontWeight={600}
+      fill={payload?.color ?? "#334155"}
+    >
+      {percent.toFixed(1)}%
+    </text>
+  );
+}
+
 const chartData = (data: ScoreLevelReport[] = []): ChartRow[] =>
   data.map((item) => {
     const rawItem = item as ScoreLevelReport & {
@@ -87,7 +107,7 @@ const pieDataBySubject = (item: ChartRow) => {
   const total = item.excellent + item.good + item.average + item.poor;
 
   return SCORE_LEVELS.map((level) => {
-    const value = item[level.key];
+    const value = Number(item[level.key] ?? 0);
     const percent = total > 0 ? (value / total) * 100 : 0;
 
     return {
@@ -101,17 +121,22 @@ const pieDataBySubject = (item: ChartRow) => {
 
 function CustomTooltip({ active, payload, label }: any) {
   if (!active || !payload?.length) return null;
+
   return (
     <div className="chart-tooltip">
       <div className="chart-tooltip-title">{label}</div>
+
       {payload.map((item: any) => (
-        <div key={item.name} className="chart-tooltip-row">
-          <span
-            className="chart-tooltip-dot"
-            style={{ background: item.color }}
-          />
-          <span>{item.name}</span>
-          <strong>{item.value}</strong>
+        <div key={item.dataKey} className="chart-tooltip-row">
+          <div className="chart-tooltip-label">
+            <span
+              className="chart-tooltip-dot"
+              style={{ background: item.color }}
+            />
+            <span>{item.name}:</span>
+          </div>
+
+          <strong>{Number(item.value ?? 0).toLocaleString("vi-VN")}</strong>
         </div>
       ))}
     </div>
@@ -121,25 +146,30 @@ function CustomTooltip({ active, payload, label }: any) {
 function CustomPieTooltip({ active, payload }: any) {
   if (!active || !payload?.length) return null;
 
-  const item = payload[0];
-  const data = item.payload;
+  const data = payload[0].payload;
 
   return (
     <div className="chart-tooltip">
       <div className="chart-tooltip-title">{data.name}</div>
 
       <div className="chart-tooltip-row">
-        <span
-          className="chart-tooltip-dot"
-          style={{ background: data.color }}
-        />
-        <span>Số lượng</span>
-        <strong>{data.value}</strong>
+        <div className="chart-tooltip-label">
+          <span
+            className="chart-tooltip-dot"
+            style={{ background: data.color }}
+          />
+          <span>Số lượng:</span>
+        </div>
+
+        <strong>{Number(data.value ?? 0).toLocaleString("vi-VN")}</strong>
       </div>
 
       <div className="chart-tooltip-row">
-        <span>Tỷ lệ</span>
-        <strong>{data.percent.toFixed(1)}%</strong>
+        <div className="chart-tooltip-label">
+          <span>Tỷ lệ:</span>
+        </div>
+
+        <strong>{Number(data.percent ?? 0).toFixed(1)}%</strong>
       </div>
     </div>
   );
@@ -281,9 +311,7 @@ export default function ScoreLevelChartPage() {
                                 innerRadius={42}
                                 outerRadius={76}
                                 paddingAngle={3}
-                                label={({ percent }) =>
-                                  `${((percent ?? 0) * 100).toFixed(0)}%`
-                                }
+                                label={renderPieLabel}
                                 isAnimationActive
                                 animationDuration={900}
                                 animationEasing="ease-out"
@@ -292,7 +320,6 @@ export default function ScoreLevelChartPage() {
                                   <Cell key={entry.name} fill={entry.color} />
                                 ))}
                               </Pie>
-
                               <Tooltip content={<CustomPieTooltip />} />
                               <Legend />
                             </PieChart>

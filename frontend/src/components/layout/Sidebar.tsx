@@ -17,25 +17,21 @@ export default function Sidebar({ activeTab, onChangeTab }: Props) {
   return (
     <aside className="sidebar">
       <div className="sidebar-brand">
-        <div className="brand-mark">
+        <div className="sidebar-brand-mark">
           <FiBookOpen />
         </div>
         <div>
           <h1>G-Scores</h1>
-          <p>Dashboard điểm thi THPT</p>
+          <p>THPT 2024</p>
         </div>
       </div>
 
-      <div className="sidebar-note">
-        Demo admin dashboard cho intern assignment
-      </div>
-
-      <nav className="sidebar-nav">
+      <nav className="sidebar-nav" aria-label="Điều hướng chính">
         {items.map((item) => (
           <button
             key={item.key}
             type="button"
-            className={`sidebar-item ${activeTab === item.key ? "active" : ""}`}
+            className={`sidebar-nav-item ${activeTab === item.key ? "active" : ""}`}
             onClick={() => onChangeTab(item.key)}
           >
             <span className="sidebar-item-icon">{item.icon}</span>

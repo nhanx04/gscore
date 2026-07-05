@@ -15,11 +15,11 @@ export default function DashboardLayout({
   onChangeTab,
 }: Props) {
   return (
-    <div className="page-shell">
+    <div className="app-shell page-shell">
       <Sidebar activeTab={activeTab} onChangeTab={onChangeTab} />
-      <main className="main">
+      <main className="app-main main">
         <Header activeTab={activeTab} />
-        <div className="content">{children}</div>
+        <div className="app-content content">{children}</div>
       </main>
     </div>
   );

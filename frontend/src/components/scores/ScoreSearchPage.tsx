@@ -1,5 +1,5 @@
 import { useState } from "react";
-import { FiSearch, FiAlertCircle } from "react-icons/fi";
+import { FiAlertCircle, FiCheckCircle, FiSearch } from "react-icons/fi";
 import Button from "@/components/common/Button";
 import Dialog from "@/components/common/Dialog";
 import ScoreResultTable from "./ScoreResultTable";
@@ -29,43 +29,42 @@ export default function ScoreSearchPage() {
   };
 
   return (
-    <section className="stack">
-      <div className="card hero-card">
-        <div className="hero-content">
-          <div className="hero-icon">
-            <FiSearch />
-          </div>
-          <div>
-            <h2>Tra cứu điểm</h2>
-            <p className="muted">
-              Nhập số báo danh để xem kết quả điểm thi THPT 2024.
-            </p>
-          </div>
+    <section className="page stack">
+      {/* <div className="search-panel panel"> */}
+      <form className="search-form" onSubmit={handleSubmit}>
+        <div className="hero-icon">
+          <FiSearch />
         </div>
-        <form className="search-form" onSubmit={handleSubmit}>
+        <div className="input-shell">
           <input
-            className="input"
+            className="form-control input"
             inputMode="numeric"
             placeholder="Nhập số báo danh"
             value={value}
             onChange={(e) => setValue(e.target.value)}
           />
-          <Button type="submit" isLoading={loading}>
-            Tra cứu
-          </Button>
-        </form>
-        {fieldError ? (
-          <div className="inline-alert">
-            <FiAlertCircle />
-            <span>{fieldError}</span>
-          </div>
-        ) : null}
-      </div>
+          {fieldError ? (
+            <div className="inline-alert">
+              <FiAlertCircle />
+              <span>{fieldError}</span>
+            </div>
+          ) : null}
+        </div>
+        <Button type="submit" isLoading={loading}>
+          Tra cứu
+        </Button>
+      </form>
+      {/* </div> */}
 
-      <div className="card">
+      <div className="panel">
         <div className="section-head">
-          <h3>Kết quả tra cứu</h3>
-          <span className="section-badge">Luôn hiển thị</span>
+          <div>
+            <h3>Kết quả tra cứu</h3>
+          </div>
+          <span className="section-badge">
+            <FiCheckCircle />
+            Kết quả tham chiếu
+          </span>
         </div>
         <ScoreResultTable score={result} />
       </div>
